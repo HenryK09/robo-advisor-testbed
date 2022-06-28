@@ -33,7 +33,7 @@ def get_ratb_data():
     # for s in st:
     #     ra_list.append(s.get_text())
 
-    return df
+    return df.astype(str)
 
 
 def get_product_price(sr):
@@ -42,4 +42,14 @@ def get_product_price(sr):
     res = requests.get(url)
     j = res.json()
     df = pd.json_normalize(j['chartsRatereturnAcnut'])
-    return df
+    df = df.rename(columns={
+        'basicDate': 'base_dt',
+        'standardPrice': 'std_pr',
+        'acnutNm': 'account_name'
+    })
+    df['product_name'] = sr['algorithm_name']
+    df['group'] = sr['group']
+
+    df = df[['base_dt', 'product_name', 'account_name', 'std_pr', 'group']]
+
+    return df.where(pd.notnull(df), None)

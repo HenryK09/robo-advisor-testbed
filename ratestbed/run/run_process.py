@@ -1,6 +1,7 @@
 import concurrent.futures as futures
 from ratestbed.site.ratb import get_product_price
 from ratestbed.site.ratb import get_ratb_data
+from ratestbed.uploader.upload import upload_ratestbed_price
 import os
 import pandas as pd
 
@@ -14,27 +15,24 @@ def run_multi_proces(df):
             futures_list.append(future)
 
     result = futures.wait(futures_list)
-    price_list = []
+    # price_list = []
     for future in result.done:
         try:
             r = future.result()
-            price_list.append(r)
+            upload_ratestbed_price(r.to_dict())
+            # price_list.append(r)
         except:
             return None
-
-    return price_list
 
 
 def main():
     if os.path.isfile('ratestbed_info.xlsx'):
-        df = pd.read_csv('./ratestbed_info.xlsx')
+        df = pd.read_excel('./ratestbed_info.xlsx', dtype=str, index_col=0)
     else:
         df = get_ratb_data()
-        df.to_excel('/Users/user/dataknows/robo-advisor-testbed/ratestbed_info.xlsx')
+        df.to_excel('/Users/richg/dataknows/robo-advisor-testbed/ratestbed_info.xlsx')
 
-    price_list = run_multi_proces(df)
-
-    return price_list
+    run_multi_proces(df)
 
 
 if __name__ == '__main__':
