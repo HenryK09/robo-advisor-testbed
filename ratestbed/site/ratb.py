@@ -30,7 +30,10 @@ def get_ratb_data():
 def get_product_price(sr):
     today = pd.Timestamp.today().strftime('%Y-%m-%d')
     url = f'https://www.ratestbed.kr:7443/portal/pblntf/chartsRatereturn.json?acnutSn={sr["acnutSn"]}&invtTyCd={sr["invtTyCd"]}&sdate=2000-01-01&edate={today}&hbrdAssetsAt={sr["hbrdAssetsAt"]}&odrSn={sr["odrSn"]}&targetSe=C'
-    res = requests.get(url)
+    try:
+        res = requests.get(url)
+    except:
+        return None
     j = res.json()
     df = pd.json_normalize(j['chartsRatereturnAcnut'])
     df = df.rename(columns={
@@ -43,10 +46,7 @@ def get_product_price(sr):
 
     df['base_dt'] = pd.to_datetime(df['base_dt'])
 
-    try:
-        df = df[['base_dt', 'product_name', 'account_name', 'std_pr', 'group']]
-    except:
-        return None
+    df = df[['base_dt', 'product_name', 'account_name', 'std_pr', 'group']]
 
     return df.where(pd.notnull(df), None)
 
