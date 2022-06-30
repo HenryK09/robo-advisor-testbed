@@ -41,7 +41,12 @@ def get_product_price(sr):
     df['product_name'] = sr['algorithm_name']
     df['group'] = sr['group']
 
-    df = df[['base_dt', 'product_name', 'account_name', 'std_pr', 'group']]
+    df['base_dt'] = pd.to_datetime(df['base_dt'])
+
+    try:
+        df = df[['base_dt', 'product_name', 'account_name', 'std_pr', 'group']]
+    except:
+        return None
 
     return df.where(pd.notnull(df), None)
 
@@ -87,4 +92,4 @@ def data_cleansing(sr):
 
     sr = sr.drop(index='std_pr')
 
-    return sr
+    return sr.where(pd.notnull(sr), None)

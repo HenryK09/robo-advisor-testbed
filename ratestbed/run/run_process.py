@@ -15,7 +15,7 @@ def batch_product_daily(df):
         for i in list(range(len(df))):
             sr = df.iloc[i]
             future = executor.submit(get_product_price, sr)
-            print(f'{sr.algorithm_name} submitted')
+            print(f'{i} submitted')
             futures_list.append(future)
 
     print('start uploading')
@@ -35,7 +35,7 @@ def batch_product_info(df):
         for i in list(range(len(df))):
             sr = df.iloc[i]
             future = executor.submit(get_product_info, sr)
-            print(f'{sr.algorithm_name} submitted')
+            print(f'{i} submitted')
             futures_list.append(future)
 
     print('start uploading')
