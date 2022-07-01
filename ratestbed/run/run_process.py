@@ -7,6 +7,7 @@ from ratestbed.uploader.upload import upload_ratestbed_price
 from ratestbed.uploader.upload import upload_ratestbed_info
 import os
 import pandas as pd
+import traceback
 
 
 def batch_product_daily(df):
@@ -23,10 +24,11 @@ def batch_product_daily(df):
     for n, future in enumerate(result.done):
         try:
             r = future.result()
-            upload_ratestbed_price(r.to_dict())
+            upload_ratestbed_price(r.to_dict(orient='records'))
             print(f'{n} uploaded')
         except Exception as e:
-            raise e
+            print(f'{e}')
+            pass
 
 
 def batch_product_info(df):
@@ -47,7 +49,9 @@ def batch_product_info(df):
             upload_ratestbed_info(sr.to_dict())
             print(f'{n} uploaded')
         except Exception as e:
-            raise e
+            print(f'{e}')
+            traceback.print_exc()
+            pass
 
 
 def main():
@@ -60,7 +64,7 @@ def main():
     print('start product daily process')
     batch_product_daily(df)
     print('start product info process')
-    batch_product_info(df)
+    # batch_product_info(df)
 
 
 if __name__ == '__main__':
