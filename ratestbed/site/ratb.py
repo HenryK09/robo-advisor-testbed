@@ -41,12 +41,12 @@ def get_product_price(sr):
         'standardPrice': 'std_pr',
         'acnutNm': 'account_name'
     })
-    df['product_name'] = sr['algorithm_name']
     df['group'] = sr['group']
 
     df['base_dt'] = pd.to_datetime(df['base_dt'])
 
-    df = df[['base_dt', 'product_name', 'account_name', 'std_pr', 'group']]
+    df['id'] = 'RA'+sr['acnutSn']+sr['invtTyCd']+sr['odrSn']+sr['hbrdAssetsAt']
+    df = df[['id', 'base_dt', 'std_pr']]
 
     return df.where(pd.notnull(df), None)
 
@@ -63,6 +63,8 @@ def get_product_info(sr):
             value = th[i + 1].text.strip()
             indv_dict = {key: value}
             info_dict = info_dict | indv_dict
+
+    info_dict = info_dict | {'id': 'RA'+sr['acnutSn']+sr['invtTyCd']+sr['odrSn']+sr['hbrdAssetsAt']}
 
     return pd.Series(info_dict)
 
