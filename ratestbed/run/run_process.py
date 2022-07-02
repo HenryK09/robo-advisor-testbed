@@ -9,6 +9,8 @@ import os
 import pandas as pd
 import traceback
 
+WINDOWS_PATH = 'C:/Users/richg/dataknows/robo-advisor-testbed'
+
 
 def batch_product_daily(df):
     futures_list = []
@@ -55,11 +57,11 @@ def batch_product_info(df):
 
 
 def main():
-    if os.path.isfile('ratestbed_info.xlsx'):
-        df = pd.read_excel('ratestbed_info.xlsx', dtype=str, index_col=0)
+    if os.path.isfile(f'{WINDOWS_PATH}/ratestbed_info.xlsx'):
+        df = pd.read_excel(f'{WINDOWS_PATH}/ratestbed_info.xlsx', dtype=str, index_col=0)
     else:
         df = get_ratb_data()
-        df.to_excel('ratestbed_info.xlsx')
+        df.to_excel(f'{WINDOWS_PATH}/ratestbed_info.xlsx')
 
     print('start product daily process')
     batch_product_daily(df)
