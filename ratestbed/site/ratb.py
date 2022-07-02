@@ -1,8 +1,8 @@
 import requests
 import pandas as pd
+from ratestbed.uploader.upload import upload_ratestbed_info
 from bs4 import BeautifulSoup as bs
 import json
-from ratestbed.uploader.upload import upload_ratestbed_info
 
 
 def get_ratb_data():
@@ -28,13 +28,15 @@ def get_ratb_data():
     return df.astype(str)
 
 
-def get_product_price(sr):
-    today = pd.Timestamp.today().strftime('%Y-%m-%d')
-    url = f'https://www.ratestbed.kr:7443/portal/pblntf/chartsRatereturn.json?acnutSn={sr["acnutSn"]}&invtTyCd={sr["invtTyCd"]}&sdate=2000-01-01&edate={today}&hbrdAssetsAt={sr["hbrdAssetsAt"]}&odrSn={sr["odrSn"]}&targetSe=C'
+def get_product_price(sr, start):
+    end = (pd.Timestamp.today() - pd.offsets.Day()).strftime('%Y-%m-%d')
+    url = f'https://www.ratestbed.kr:7443/portal/pblntf/chartsRatereturn.json?acnutSn={sr["acnutSn"]}&invtTyCd={sr["invtTyCd"]}&sdate={start}&edate={end}&hbrdAssetsAt={sr["hbrdAssetsAt"]}&odrSn={sr["odrSn"]}&targetSe=C'
+
     try:
         res = requests.get(url)
     except:
         return None
+
     j = res.json()
     df = pd.json_normalize(j['chartsRatereturnAcnut'])
     df = df.rename(columns={
@@ -112,6 +114,7 @@ def data_cleansing(sr):
 
 if __name__ == '__main__':
     df = pd.read_excel('C:/Users/richg/dataknows/robo-advisor-testbed/ratestbed_info.xlsx', dtype=str, index_col=0)
-    sr = get_product_info(df[350:360])
-    sr = data_cleansing(sr)
-    upload_ratestbed_info(sr.to_dict())
+    df = get_product_price(df.iloc[248])
+    # sr = get_product_info(df[350:360])
+    # sr = data_cleansing(sr)
+    # upload_ratestbed_info(sr.to_dict())
