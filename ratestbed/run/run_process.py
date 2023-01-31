@@ -74,8 +74,8 @@ def main():
 
     print('start product daily process')
     batch_product_daily(df, start)
-    # print('start product info process')
-    # batch_product_info(df)
+    print('start product info process')
+    batch_product_info(df)
 
 
 if __name__ == '__main__':
